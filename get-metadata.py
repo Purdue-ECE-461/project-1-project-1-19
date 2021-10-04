@@ -1,18 +1,12 @@
-from scoringscript import *
-from github import Github
-import os
 import datetime as dt
+import os
 import dateutil.relativedelta as du
 import requests
 from bs4 import BeautifulSoup
 from bs4 import re
+from github import Github
 
-
-# import requests
-# import json
-
-
-# import numpy as np
+from scoringscript import *
 
 
 def metadata_collect(url):
@@ -35,19 +29,19 @@ def metadata_collect(url):
     # print(lic)
 
     g = Github(token)
-    repo = g.get_repo(url)
+    reps = g.get_repo(url)
     # pulls = repo.get_contributors(anon="True")
 
-    content_list = repo.get_contents("")
+    content_list = reps.get_contents("")
     p_list = []
 
     for elem in content_list:
         p_list.append(elem.path)
 
     git_name = 'LICENSE'
-    print(p_list)
+    # print(p_list)
     if git_name in p_list:
-        li = repo.get_license().decoded_content
+        li = reps.get_license().decoded_content
         li = li.title().decode()
         ind = li.split()[0]
         if ind.lower() == "the":
@@ -67,7 +61,7 @@ def metadata_collect(url):
     else:
         rm = 0
 
-    if repo.has_wiki:
+    if reps.has_wiki:
         wiki = 1
     else:
         wiki = 0
@@ -82,23 +76,23 @@ def metadata_collect(url):
     date_lm = today + du.relativedelta(months=-1)
 
     # trying to get issues from the last month
-    issues_total1 = repo.get_issues(since=date_lm, state='all').totalCount
-    issues_closed1 = repo.get_issues(since=date_lm, state='closed').totalCount
+    issues_total1 = reps.get_issues(since=date_lm, state='all').totalCount
+    issues_closed1 = reps.get_issues(since=date_lm, state='closed').totalCount
     if issues_total1:
         per_close_1 = (issues_closed1 / issues_total1) * 100
     else:
         per_close_1 = 0
     date_llm = date_lm + du.relativedelta(months=-1)
-    issues_total2 = repo.get_issues(since=date_llm, state='all').totalCount - issues_total1
-    issues_closed2 = repo.get_issues(since=date_llm, state='closed').totalCount - issues_closed1
+    issues_total2 = reps.get_issues(since=date_llm, state='all').totalCount - issues_total1
+    issues_closed2 = reps.get_issues(since=date_llm, state='closed').totalCount - issues_closed1
     if issues_total2:
         per_close_2 = (issues_closed2 / issues_total2) * 100
     else:
         per_close_2 = 0
 
     date_lllm = date_llm + du.relativedelta(months=-1)
-    issues_total3 = repo.get_issues(since=date_lllm, state='all').totalCount - issues_total1 - issues_total2
-    issues_closed3 = repo.get_issues(since=date_lllm, state='closed').totalCount - issues_closed1 - issues_closed2
+    issues_total3 = reps.get_issues(since=date_lllm, state='all').totalCount - issues_total1 - issues_total2
+    issues_closed3 = reps.get_issues(since=date_lllm, state='closed').totalCount - issues_closed1 - issues_closed2
     if issues_total3:
         per_close_3 = (issues_closed3 / issues_total3) * 100
     else:
@@ -107,12 +101,12 @@ def metadata_collect(url):
     avg_per_close = (per_close_1 + per_close_2 + per_close_3) / 3
     # print(avg_per_close)
 
-    cont = repo.get_contributors(anon='True').totalCount  # number of contributors for the repo
-    issues_close_time = repo.get_issues(since=date_lm, state='closed')
+    cont = reps.get_contributors(anon='True').totalCount  # number of contributors for the repo
+    issues_close_time = reps.get_issues(since=date_lm, state='closed')
     cr_time = []
     end_time = []
     # print((cr_time))
-    iss_check = repo.get_issues(since=date_lm, state='closed').totalCount
+    iss_check = reps.get_issues(since=date_lm, state='closed').totalCount
     if iss_check > 0:
         for issues in issues_close_time:
             cr_time.append(issues.created_at.day)
@@ -135,6 +129,7 @@ def metadata_collect(url):
     return metadata_dict
 
 
+# Code by @Richard-Rhee
 def url_parser(filename):
     # urls = []
     with open(filename) as f:
@@ -151,6 +146,8 @@ def api_url_generator(urls):
         api_urls.append(url)
     return api_urls
 
+
+# Code by @Richard-Rhee
 
 def main():
     filename = 'tests/test3.txt'
