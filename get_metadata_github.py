@@ -10,11 +10,10 @@ GITHUB_API = 'https://api.github.com'
 def main():
     filename = 'tests/test1.txt'
     data = {}
-    dataTitles = ['commits', 'issues', 'branches', 'license']
+    dataTitles = ['commits', 'issues', 'branches', 'license', 'readme']
 
     urls = url_parser(filename)
     api_urls = api_url_generator(urls)
-    get_license(api_urls[0])
 
 
 def url_parser(filename):
@@ -51,15 +50,29 @@ def get_commits(api_url):
     owner, repo = parse_url_owner_repo(api_url)
     url_commits = GITHUB_API + REPOS + owner + repo + '/commits'
     commits = requests.get(url_commits).json()
+    return commits
 
 
 def get_license(api_url):
     owner, repo = parse_url_owner_repo(api_url)
     url_license = GITHUB_API + REPOS + owner + repo + '/license'
     lic = requests.get(url_license).json()
+    return lic
+
+
+def get_readme(api_url):
+    owner, repo = parse_url_owner_repo(api_url)
+    url_readme = GITHUB_API + REPOS + owner + repo + '/readme'
+    readme = requests.get(url_readme).json()
+    return readme
 
 
 # number of contributors (in the last year)
 # number of open/closed issues
+
+
+def output_json(data):
+    with open('out', 'w') as f:
+        json.dump(data, f)
 
 main()
