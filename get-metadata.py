@@ -3,6 +3,10 @@ from github import Github
 import os
 import datetime as dt
 import dateutil.relativedelta as du
+import requests
+from bs4 import BeautifulSoup
+from bs4 import re
+
 
 # import requests
 # import json
@@ -11,9 +15,17 @@ import dateutil.relativedelta as du
 # import numpy as np
 
 
-def metadata_collect(owner, repository, url):
+def metadata_collect(url):
     # backup_url = url
-    url = url.replace("https://github.api.com/repos/", "")
+    npm_flag = "https://www.npmjs.com"
+    if npm_flag in url:
+        headers = {'Accept-Encoding': 'identity'}
+        req = requests.get(url, headers=headers)
+        soup = BeautifulSoup(req.text, 'html.parser')
+        all_links = soup.find_all('a', href=re.compile(r'github\.com/'))
+        url = all_links[0].get('href')
+
+    url = url.replace("https://github.com/", "")
 
     token = os.getenv('GITHUB_TOKEN')
     # TOKEN= os.getenv('GITHUB_TOKEN')
@@ -33,7 +45,7 @@ def metadata_collect(owner, repository, url):
         p_list.append(elem.path)
 
     git_name = 'LICENSE'
-    # print(p_list)
+    print(p_list)
     if git_name in p_list:
         li = repo.get_license().decoded_content
         li = li.title().decode()
@@ -141,25 +153,14 @@ def api_url_generator(urls):
 
 
 def main():
-    filename = 'tests/test1.txt'
+    filename = 'tests/test3.txt'
     urls = url_parser(filename)
-    owner = []
-    repository = []
-    # Code by @Richard-Rhee
-    for normal in urls:
-        slash_owner = normal.find('/', 15)
-        slash_repo = normal.rfind('/')
-        own = normal[slash_owner:slash_repo]
-        owner.append(own)
-        reps = normal[slash_repo+1:]
-        repository.append(reps)
-    # Code by @Richard-Rhee
-    api_urls = api_url_generator(urls)
+    # api_urls = api_url_generator(urls)
     i = 0
-    for url in api_urls:
+    for url in urls:
         backup_url = url
         # print(url)
-        metadata_dict = metadata_collect(owner[i], repository[i], url)
+        metadata_dict = metadata_collect(url)
         # print(metadata_dict)
         scoring(backup_url, metadata_dict)
         i = i + 1
