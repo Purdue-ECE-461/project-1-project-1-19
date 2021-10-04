@@ -1,0 +1,44 @@
+#!/usr/bin/env python3
+# This file is the executable that will be the basis for our project
+
+import argparse
+import logging
+import os
+
+def testFunc():
+    print("testing!")
+    
+def installFunc():
+    print("Installing!")
+    
+def fileFunc():
+    print("filePathing!")
+
+def main():
+    myParser = argparse.ArgumentParser(description="Run Module Evaluator")
+    myParser.add_argument("command")
+    args = myParser.parse_args()
+    print(args.command)
+    
+    # Check the input after "/run"
+    if args.command == "install":
+        installFunc()
+    elif args.command == "test":
+        testFunc()
+    else:
+        # Check if the input is a valid file
+        try:
+            with open(args.command):
+                fileFunc()
+        except FileNotFoundError:
+            print("Invalid input. Reference: ./run -h")
+        pass
+    
+    #print(os.path)
+    #exit(0)
+      
+# Main function portability for scripting vs running this .py file    
+if __name__ == "__main__":
+    main()
+
+
