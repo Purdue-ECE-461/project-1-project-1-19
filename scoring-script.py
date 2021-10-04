@@ -13,19 +13,22 @@
 
 
 def scoring(arg):
-    weight_ramp = 0.15  # ramp up score checks if the repository has a readme, a setup, and documentation to reduce
-    # ramp-up time
-    weight_correct = 0.2  # correctness uses the average percentage of issues closed per month over the last year
-    weight_busfactor = 0.3  # the number of contributors over the last month.
-    weight_active = 0.2  # active uses the average time taken to close or respond to an open issue.
-    weight_license = 0.15  # average number of contributors over the last year.
+    # weights for each score
+    weight_ramp = 0.15
+    weight_correct = 0.2
+    weight_busfactor = 0.3
+    weight_active = 0.2
+    weight_license = 0.15
 
+    # ramp up score checks if the repository has a readme, a setup, and documentation to reduce,
+    # metadata gathered
     key = 'readme'
     key1 = 'setup'
     key2 = 'documentation'
     unw_ramp = (arg.get(key) + arg.get(key1) + arg.get(key2)) / 3
-    avg_iss_clsd = arg.get('average %issues closed')  # number of average issues closed
 
+    # correctness uses the average percentage of issues closed per month over the last year
+    avg_iss_clsd = arg.get('average %issues closed')  # number of average issues closed
     if avg_iss_clsd == 0:
         correctness_sc = 0
     elif avg_iss_clsd <= 50:
@@ -36,6 +39,7 @@ def scoring(arg):
     else:
         correctness_sc = 1
 
+    # the number of contributors over the last month
     num_contributors = (arg.get('number_contributors'))
     if num_contributors >= 150:
         bus_score = 1
@@ -48,31 +52,39 @@ def scoring(arg):
     else:
         bus_score = 0
 
+    # active uses the average time taken to close or respond to an open issue.
     time_taken = (arg.get('average time'))
-    if time_taken <= 3:
+    if time_taken <= 3:  # was chosen based on a an Audit by David Eaves for Mozilla Community Metrics. The
+        # presentation is the first link for the search input: "Mozilla Community Metrics - Community Builders"
         active = 1
-    elif 3 < time_taken <= 7:
-        active = 0.5
-    elif 7 < time_taken <=14:
+    elif 3 < time_taken <= 7:  # The same audit found that contributors who waited over 7 days for a code review had
+        # virtually zero likelihood of returning, thus giving us the metric for active maintainers
+        active = 0.4
+    elif 7 < time_taken <= 14:
         active = 0.2
     elif time_taken > 14:
         active = 0
 
-    license_boo = (arg.get('license'))
-    if license_boo == 0:
+    # license checks if license is compatible with GNU LPGLv2.1
+    license_boo = (arg.get('license'))  # gets value of key from dictionary input
+    if license_boo == 0:  # All the pre-processing done in get-metadata.py. 1 if License is compatible with GNU
+        # LGPLv2.1, 0 if it isn't.
         license_unw = 0
     else:
         license_unw = 1
 
+    # assigning scores for clarity
     ramp_up_score = unw_ramp
     correctness_score = correctness_sc
     bus_factor_score = bus_score
     responsive_maintainer_score = active
     license_score = license_unw
 
+    # Calculating weighted sum. Weights were assigned in a way that the sum is always between 0 and 1, with 0 for the
+    # worst repositories and 1 for repositories that satisfy all requirements.
     net_score = (weight_ramp * ramp_up_score) + (weight_correct * correctness_score) + (
-                weight_busfactor * bus_factor_score) + (weight_active * responsive_maintainer_score) + (
-                            weight_license * license_score)  # calculating the weighted sum
+            weight_busfactor * bus_factor_score) + (weight_active * responsive_maintainer_score) + (
+                        weight_license * license_score)
     print(net_score)
     pass
 
