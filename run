@@ -14,7 +14,7 @@ def testFunc():
 
 def installFunc():
     print("Installing!")
-    os.system('pip install --user -r requirements.txt')
+    os.system('pip3 install --user -r requirements.txt')
     
 def fileFunc(param):
     print("filePathing!")
@@ -88,8 +88,7 @@ def main():
                 fileFunc(args.command)
         except FileNotFoundError:
             print("Invalid input. Reference: './run -h'")
-            logging.info(    print("We went too far")
-"Invalid input. Reference: './run -h'")
+            logging.info("Invalid input. Reference: './run -h'")
     
     pass # replace this with our actual file opening/passing of URL list
     
