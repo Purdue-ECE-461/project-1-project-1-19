@@ -89,6 +89,7 @@ def main():
     pass # replace this with our actual file opening/passing of URL list
     
     print("We went too far")
+    print("synthesize me")
     #print(os.path)
     sys.exit(0)
       
