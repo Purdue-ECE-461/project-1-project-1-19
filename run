@@ -9,7 +9,7 @@ import os.path
 
 def testFunc():
     print("testing!")
-    param = 'tests/test3.txt'
+    param = 'tests/test_final.txt'
     os.system(f'python3 get-metadata.py {param}')
 
 def installFunc():
