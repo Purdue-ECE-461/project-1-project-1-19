@@ -5,50 +5,47 @@ import requests
 from bs4 import BeautifulSoup
 from bs4 import re
 from github import Github
-
 from scoringscript import *
 
 
 def metadata_collect(url):
-    # backup_url = url
     npm_flag = "https://www.npmjs.com"
     if npm_flag in url:
         headers = {'Accept-Encoding': 'identity'}
         req = requests.get(url, headers=headers)
         soup = BeautifulSoup(req.text, 'html.parser')
-        all_links = soup.find_all('a', href=re.compile(r'github\.com/'))
+        all_links = soup.find_all('a', href=re.compile(r"github\.com/"))
         url = all_links[0].get('href')
 
     url = url.replace("https://github.com/", "")
 
     token = os.getenv('GITHUB_TOKEN')
-    # TOKEN= os.getenv('GITHUB_TOKEN')
-    # url_license ="https://github.api.com/repos" + owner + repository + '/license'
-    # print(url_license)
-    # lic = requests.get(url_license).json()
-    # print(lic)
 
     g = Github(token)
     reps = g.get_repo(url)
-    # pulls = repo.get_contributors(anon="True")
 
     content_list = reps.get_contents("")
     p_list = []
 
     for elem in content_list:
         p_list.append(elem.path)
+    mit = "MIT"
+    gnu = "GNU"
+    apache = "Apache"
+    affero = "Affero"
+    bsd = "BSD"
+    mit_l = mit.lower()
+    gnu_l = gnu.lower()
+    apache_l = apache.lower()
+    affero_l = affero.lower()
+    bsd_l = bsd.lower()
 
     git_name = 'LICENSE'
-    # print(p_list)
     if git_name in p_list:
         li = reps.get_license().decoded_content
         li = li.title().decode()
-        ind = li.split()[0]
-        if ind.lower() == "the":
-            ind = li.split(' ')[1]
-        # print(ind)
-        if ind.lower() == "gnu" or ind.lower() == "affero" or ind.lower() == "bsd" or ind.lower() == "mit" \
-                or ind.lower() == "apache":
+        if mit_l in li.lower() or gnu_l in li.lower() or apache_l in li.lower() or affero_l in li.lower() \
+                or bsd_l in li.lower():
             lic = 1
         else:
             lic = 0
@@ -57,6 +54,14 @@ def metadata_collect(url):
 
     git_name = 'README.md'
     if git_name in p_list:
+        li = reps.get_readme().decoded_content
+        li = li.title().decode()
+        if lic != 1:
+            if mit_l in li.lower() or gnu_l in li.lower() or apache_l in li.lower() or affero_l in li.lower() \
+                    or bsd_l in li.lower():
+                lic = 1
+            else:
+                lic = 0
         rm = 1
     else:
         rm = 0
@@ -123,7 +128,7 @@ def metadata_collect(url):
         "documentation": wiki,  # Ramp-up score
         "average %issues closed": avg_per_close,  # Correctness score
         "number_contributors": cont,  # Bus-factor score
-        "average_time": avg_response_time,  # Responsive Maintainer Score
+        "average time": avg_response_time,  # Responsive Maintainer Score
         "license": lic  # License score
     }
     return metadata_dict
@@ -153,14 +158,13 @@ def main():
     filename = 'tests/test3.txt'
     urls = url_parser(filename)
     # api_urls = api_url_generator(urls)
-    i = 0
+    # i = 0
     for url in urls:
         backup_url = url
         # print(url)
         metadata_dict = metadata_collect(url)
         # print(metadata_dict)
         scoring(backup_url, metadata_dict)
-        i = i + 1
 
 
 if __name__ == "__main__":
