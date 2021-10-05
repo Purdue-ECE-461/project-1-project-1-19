@@ -15,7 +15,7 @@ def metadata_collect(url):
         headers = {'Accept-Encoding': 'identity'}
         req = requests.get(url, headers=headers)
         soup = BeautifulSoup(req.text, 'html.parser')
-        all_links = soup.find_all('a', href=re.compile(r"github\.com/"))
+        all_links = soup.find_all('a', attrs={'aria-labelledby':'repository'})
         url = all_links[0].get('href')
 
     url = url.replace("https://github.com/", "")
