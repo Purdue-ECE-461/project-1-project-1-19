@@ -2,6 +2,7 @@ import datetime as dt
 import os
 import dateutil.relativedelta as du
 import requests
+import sys
 from bs4 import BeautifulSoup
 from bs4 import re
 from github import Github
@@ -155,7 +156,7 @@ def api_url_generator(urls):
 # Code by @Richard-Rhee
 
 def main():
-    filename = 'tests/test3.txt'
+    filename = str(sys.argv[1])
     urls = url_parser(filename)
     # api_urls = api_url_generator(urls)
     # i = 0

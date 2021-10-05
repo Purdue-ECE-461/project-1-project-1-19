@@ -9,13 +9,16 @@ import os.path
 
 def testFunc():
     print("testing!")
-    
+    param = 'tests/test3.txt'
+    os.system(f'python3 get-metadata.py {param}')
+
 def installFunc():
     print("Installing!")
     os.system('pip install --user -r requirements.txt')
     
-def fileFunc():
+def fileFunc(param):
     print("filePathing!")
+    os.system(f'python3 get-metadata.py {param}')
 
 def envCheckFunc():
     if "GITHUB_TOKEN" in os.environ:
@@ -82,7 +85,7 @@ def main():
         # Check if the input is a valid file
         try:
             with open(args.command):
-                fileFunc()
+                fileFunc(args.command)
         except FileNotFoundError:
             print("Invalid input. Reference: './run -h'")
             logging.info("Invalid input. Reference: './run -h'")
