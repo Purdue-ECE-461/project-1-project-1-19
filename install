@@ -1,3 +1,4 @@
 #!/bin/bash
 
-npm install package-metadata
+pip install python-dateutil
+pip install PyGithub
