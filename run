@@ -12,6 +12,7 @@ def testFunc():
     
 def installFunc():
     print("Installing!")
+    os.system('pip install --user -r requirements.txt')
     
 def fileFunc():
     print("filePathing!")
@@ -24,7 +25,7 @@ def envCheckFunc():
     else:
         print("'GITHUB_TOKEN' is NOT in os.environ. Exiting")
         logging.info("'GITHUB_TOKEN' is NOT in os.environ. Exiting")
-        sys.exit(1)
+        # sys.exit(1)
         #raise LookupError("Github Token not found in env.")
     if "LOG_FILE" in os.environ:
         logging.info("'LOG_FILE' is in os.environ")
@@ -33,7 +34,7 @@ def envCheckFunc():
     else:
         print("'LOG_FILE' is NOT in os.environ. Exiting")
         logging.info("'LOG_FILE' is NOT in os.environ. Exiting")
-        sys.exit(1)
+        # sys.exit(1)
         #raise LookupError("Log File not found in env.")
 
 def logSetUp():
@@ -48,16 +49,16 @@ def logSetUp():
         #sys.exit(1)
         #raise LookupError("Log File not found in env.")
 
-    if not os.path.exists(os.environ.get("LOG_FILE")):
-        with open(os.path.basename(os.environ.get("LOG_FILE")), mode='w'):
-            pass
+    # if not os.path.exists(os.environ.get("LOG_FILE")):
+    #     with open(os.path.basename(os.environ.get("LOG_FILE")), mode='w'):
+    #         pass
     
-    if log_level == 1:
-        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.INFO)
-    elif log_level == 2:
-        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.DEBUG)
-    else:
-        logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.WARNING)
+    # if log_level == 1:
+    #     logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.INFO)
+    # elif log_level == 2:
+    #     logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    # else:
+    #     logging.basicConfig(filename=os.environ.get("LOG_FILE"), format='%(levelname)s:%(message)s', level=logging.WARNING)
     # NOTE: Only use logging.info and logging.debug, as logging.warning and ABOVE are considered the "silent" logging for this project
 
 def main():
